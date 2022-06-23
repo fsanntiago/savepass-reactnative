@@ -13,6 +13,8 @@ import {
   TotalPassCount,
   LoginList,
 } from "./styles";
+import { combineTransition } from "react-native-reanimated";
+import { Alert } from "react-native";
 
 interface LoginDataProps {
   id: string;
@@ -33,17 +35,31 @@ export function Home() {
     const response = await AsyncStorage.getItem(dataKey);
 
     const logins = response ? JSON.parse(response) : [];
-    console.log(logins);
+
     setData(logins);
     setSearchListData(logins);
   }
 
   function handleFilterLoginData() {
     // Filter results inside data, save with setSearchListData
+    if (searchText.length) {
+      const searchFiltered = data.filter(
+        item =>
+          item.service_name.toLocaleLowerCase() ===
+          searchText.toLocaleLowerCase().trim()
+      );
+      console.log(searchFiltered);
+
+      setSearchListData(searchFiltered);
+    } else {
+      Alert.alert("Digite sua pesquisa");
+    }
   }
 
   function handleChangeInputText(text: string) {
-    // Update searchText value
+    setSearchText(text);
+
+    text === "" && setSearchListData(data);
   }
 
   useFocusEffect(
